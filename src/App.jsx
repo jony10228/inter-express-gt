@@ -659,28 +659,17 @@ function Hero() {
   }, [])
 
   return (
-    <section id="hero" className="relative overflow-hidden flex flex-col" style={{ background: '#0D0D0D', minHeight: '90vh' }}>
+    <section id="hero" className="relative overflow-hidden flex flex-col" style={{ background: '#0D0D0D', minHeight: '100vh' }}>
       <div className="grain-overlay absolute inset-0 z-[1]" />
 
       {/* Ambient left glow */}
       <div className="absolute pointer-events-none z-[1]" style={{ left: -100, top: '30%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(247,148,29,0.05) 0%, transparent 65%)', filter: 'blur(40px)' }} />
 
-      {/* Globe desktop — absolute right, parallax */}
-      <motion.div
-        className="hidden md:block"
-        style={{
-          x: globeX, y: globeY,
-          position: 'absolute', right: -50, top: -70,
-          width: 680, height: 680,
-          overflow: 'hidden', pointerEvents: 'none', zIndex: 1,
-        }}
-      >
-        <GlobeHero />
-      </motion.div>
-
-      {/* Content — left aligned */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 md:pl-10 w-full flex-1 flex flex-col justify-center" style={{ paddingTop: 112, paddingBottom: 40 }}>
-        <div style={{ maxWidth: 580 }}>
+      {/* Content: 2-col grid, texto izquierda / globo derecha, centrado verticalmente */}
+      <div className="relative z-10 flex-1 flex flex-col justify-center" style={{ paddingTop: 80, paddingBottom: 24 }}>
+        <div className="max-w-6xl mx-auto px-6 md:pl-10 w-full">
+          <div className="grid md:grid-cols-[55%_45%] md:gap-8 items-center">
+            <div>
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 18 }}
@@ -757,15 +746,27 @@ function Hero() {
           >
             ★★★★★&nbsp;&nbsp;Más de 2,800 clientes satisfechos en Guatemala
           </motion.p>
-        </div>
+            </div>{/* /text column */}
 
-        {/* Globe mobile — inline, centered, below text */}
-        <div className="md:hidden flex justify-center mt-8" style={{ pointerEvents: 'none' }}>
-          <div style={{ width: 300, height: 300, opacity: 0.65 }}>
-            <GlobeHero />
+            {/* Globe desktop — right column */}
+            <div className="hidden md:flex items-center justify-center" style={{ pointerEvents: 'none' }}>
+              <motion.div style={{ x: globeX, y: globeY }}>
+                <div style={{ width: 480, height: 480 }}>
+                  <GlobeHero />
+                </div>
+              </motion.div>
+            </div>
+
+          </div>{/* /grid */}
+
+          {/* Globe mobile — below grid */}
+          <div className="md:hidden flex justify-center mt-8" style={{ pointerEvents: 'none' }}>
+            <div style={{ width: 300, height: 300, opacity: 0.65 }}>
+              <GlobeHero />
+            </div>
           </div>
-        </div>
-      </div>
+        </div>{/* /max-w */}
+      </div>{/* /content */}
 
       {/* Scroll hint */}
       <motion.div
