@@ -115,7 +115,7 @@ function GlobeHero() {
   const lngs = Array.from({ length: 8 }, (_, i) => i * 22.5)
 
   return (
-    <div className="absolute pointer-events-none overflow-hidden hidden md:block"
+    <div className="absolute pointer-events-none overflow-hidden"
       style={{ right: -50, top: -70, width: 680, height: 680 }}>
       <svg width="680" height="680" viewBox="0 0 600 600" fill="none" style={{ opacity: 0.9 }}>
         <defs>
@@ -356,7 +356,7 @@ function PremiumFlowDiagram() {
   }, [])
 
   return (
-    <div style={{
+    <div className="flow-card" style={{
       position: 'relative',
       background: '#0A0A0A',
       border: '1px solid #1E1E1E',
@@ -379,7 +379,7 @@ function PremiumFlowDiagram() {
       <div style={{ position: 'relative', flex: 1, zIndex: 1 }}>
 
         {/* Full-width line track — sits at vertical center of 80px nodes (40px from top) */}
-        <div style={{ position: 'absolute', left: 40, right: 40, top: 38, height: 2, zIndex: 0, borderRadius: 2 }}>
+        <div className="flow-track" style={{ position: 'absolute', left: 40, right: 40, top: 38, height: 2, zIndex: 0, borderRadius: 2 }}>
           {/* Base track */}
           <div style={{ position: 'absolute', inset: 0, background: '#1E1E1E', borderRadius: 2 }} />
           {/* Orange fill progresses with active node */}
@@ -406,8 +406,8 @@ function PremiumFlowDiagram() {
         {/* Node columns — spread across full width */}
         <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
           {nodes.map((n, i) => (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: 80 }}>
-              <div style={{
+            <div key={i} className="flow-node-col" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: 80 }}>
+              <div className="flow-node-circle" style={{
                 width: 80, height: 80, borderRadius: '50%',
                 background: '#141414',
                 border: active === i ? '2px solid #F7941D' : '1px solid #2A2A2A',
@@ -418,9 +418,9 @@ function PremiumFlowDiagram() {
                 transition: 'border 0.35s ease, box-shadow 0.35s ease',
                 flexShrink: 0,
               }}>
-                <span style={{ fontSize: 32, lineHeight: 1 }}>{n.icon}</span>
+                <span className="flow-node-emoji" style={{ fontSize: 32, lineHeight: 1 }}>{n.icon}</span>
               </div>
-              <span style={{
+              <span className="flow-node-label" style={{
                 fontSize: 13, color: active === i ? '#CCCCCC' : '#444444',
                 textAlign: 'center', fontWeight: 500, lineHeight: 1.3,
                 transition: 'color 0.35s ease',
@@ -464,7 +464,7 @@ function PremiumCasilleroMap() {
   })
 
   return (
-    <div style={{
+    <div className="casillero-card" style={{
       position: 'relative',
       background: '#0A0A0A',
       border: '1px solid #1E1E1E',
@@ -668,16 +668,21 @@ function Hero() {
       {/* Ambient left glow */}
       <div className="absolute pointer-events-none z-[1]" style={{ left: -100, top: '30%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(247,148,29,0.05) 0%, transparent 65%)', filter: 'blur(40px)' }} />
 
-      {/* Globe right — z-[1] with mouse parallax */}
+      {/* Globe mobile — static, behind text */}
+      <div className="md:hidden absolute right-0 top-0 z-[1] globe-mobile">
+        <GlobeHero />
+      </div>
+
+      {/* Globe desktop — parallax */}
       <motion.div
-        className="absolute right-0 top-0 z-[1] hidden md:block"
+        className="hidden md:block absolute right-0 top-0 z-[1]"
         style={{ x: globeX, y: globeY }}
       >
         <GlobeHero />
       </motion.div>
 
       {/* Content — left aligned */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 w-full flex-1 flex flex-col justify-center" style={{ paddingTop: 112, paddingBottom: 40, paddingLeft: 40 }}>
+      <div className="relative z-10 max-w-6xl mx-auto px-6 md:pl-10 w-full flex-1 flex flex-col justify-center" style={{ paddingTop: 112, paddingBottom: 40 }}>
         <div style={{ maxWidth: 580 }}>
           {/* Badge */}
           <motion.div
@@ -723,12 +728,13 @@ function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.52 }}
-            style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}
+            className="flex flex-col sm:flex-row gap-3 mb-6"
           >
             <motion.a
               href="#cotizar"
               whileHover={{ scale: 1.03, boxShadow: '0 8px 28px rgba(247,148,29,0.3)' }}
               whileTap={{ scale: 0.97 }}
+              className="text-center"
               style={{ background: '#F7941D', color: '#000000', fontWeight: 700, fontSize: 14, padding: '14px 28px', borderRadius: 8 }}
             >
               Cotizar ahora
@@ -738,6 +744,7 @@ function Hero() {
               whileHover={{ borderColor: '#FFFFFF', scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.18 }}
+              className="text-center"
               style={{ border: '1px solid #333333', color: '#FFFFFF', fontWeight: 600, fontSize: 14, padding: '14px 28px', borderRadius: 8 }}
             >
               Hablar por WhatsApp
@@ -821,7 +828,7 @@ function Stats() {
                 borderBottom: '1px solid #1E1E1E',
               }}
             >
-              <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 64, fontWeight: 900, lineHeight: 1, marginBottom: 10 }}>
+              <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 'clamp(36px, 9vw, 64px)', fontWeight: 900, lineHeight: 1, marginBottom: 10 }}>
                 <span style={{ color: '#FFFFFF' }}>{inView && <CountUp target={s.value} />}</span>
                 {s.accent && <span style={{ color: '#F7941D' }}>{s.accent}</span>}
               </div>
@@ -877,7 +884,7 @@ function Services() {
       </div>
 
       {/* Personal Shopper */}
-      <div style={{ background: '#0D0D0D', padding: '80px 0 120px', borderTop: '1px solid #111111', position: 'relative', overflow: 'hidden' }}>
+      <div className="service-section" style={{ background: '#0D0D0D', padding: '80px 0 120px', borderTop: '1px solid #111111', position: 'relative', overflow: 'hidden' }}>
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle 800px at 10% 30%, rgba(247,148,29,0.05), transparent)', zIndex: 0 }} />
         <div className="max-w-6xl mx-auto px-6" style={{ position: 'relative', zIndex: 1 }}>
           <motion.div
@@ -911,7 +918,7 @@ function Services() {
       </div>
 
       {/* Casillero */}
-      <div style={{ background: '#080808', padding: '120px 0', borderTop: '1px solid #141414', borderBottom: '1px solid #141414', position: 'relative', overflow: 'hidden' }}>
+      <div className="service-section" style={{ background: '#080808', padding: '120px 0', borderTop: '1px solid #141414', borderBottom: '1px solid #141414', position: 'relative', overflow: 'hidden' }}>
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle 800px at 90% 70%, rgba(247,148,29,0.05), transparent)', zIndex: 0 }} />
         <div className="max-w-6xl mx-auto px-6" style={{ position: 'relative', zIndex: 1 }}>
           <motion.div
