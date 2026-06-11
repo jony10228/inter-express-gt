@@ -115,9 +115,7 @@ function GlobeHero() {
   const lngs = Array.from({ length: 8 }, (_, i) => i * 22.5)
 
   return (
-    <div className="absolute pointer-events-none overflow-hidden"
-      style={{ right: -50, top: -70, width: 680, height: 680 }}>
-      <svg width="680" height="680" viewBox="0 0 600 600" fill="none" style={{ opacity: 0.9 }}>
+    <svg width="100%" height="100%" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid meet" fill="none" style={{ opacity: 0.9, display: 'block' }}>
         <defs>
 
           {/* ── FILTERS ─────────────────────────────────────────────────── */}
@@ -315,7 +313,6 @@ function GlobeHero() {
           fontFamily="Space Grotesk,sans-serif" letterSpacing="0.8">GUATEMALA</text>
 
       </svg>
-    </div>
   )
 }
 
@@ -668,15 +665,15 @@ function Hero() {
       {/* Ambient left glow */}
       <div className="absolute pointer-events-none z-[1]" style={{ left: -100, top: '30%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(247,148,29,0.05) 0%, transparent 65%)', filter: 'blur(40px)' }} />
 
-      {/* Globe mobile — static, behind text */}
-      <div className="md:hidden absolute right-0 top-0 z-[1] globe-mobile">
-        <GlobeHero />
-      </div>
-
-      {/* Globe desktop — parallax */}
+      {/* Globe desktop — absolute right, parallax */}
       <motion.div
-        className="hidden md:block absolute right-0 top-0 z-[1]"
-        style={{ x: globeX, y: globeY }}
+        className="hidden md:block"
+        style={{
+          x: globeX, y: globeY,
+          position: 'absolute', right: -50, top: -70,
+          width: 680, height: 680,
+          overflow: 'hidden', pointerEvents: 'none', zIndex: 1,
+        }}
       >
         <GlobeHero />
       </motion.div>
@@ -760,6 +757,13 @@ function Hero() {
           >
             ★★★★★&nbsp;&nbsp;Más de 2,800 clientes satisfechos en Guatemala
           </motion.p>
+        </div>
+
+        {/* Globe mobile — inline, centered, below text */}
+        <div className="md:hidden flex justify-center mt-8" style={{ pointerEvents: 'none' }}>
+          <div style={{ width: 300, height: 300, opacity: 0.65 }}>
+            <GlobeHero />
+          </div>
         </div>
       </div>
 
