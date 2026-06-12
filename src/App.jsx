@@ -2,30 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useInView, useMotionValue, useSpring } from 'framer-motion'
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react'
 import videoSrc from './videos/inter-express-explainer.mp4'
-
-// ─── Logo SVG ─────────────────────────────────────────────────────────────────
-// Avión top-down blanco sobre círculo naranja — sin fondo, transparente
-function LogoMark({ size = 36 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Círculo naranja sólido */}
-      <circle cx="18" cy="18" r="17" fill="#F7941D"/>
-      {/* Avión vista superior, nariz apuntando arriba→derecha (-42°), escala 0.82 */}
-      <g transform="translate(18,18) rotate(-42) scale(0.82)">
-        {/* Fuselaje — cuerpo central */}
-        <path d="M0,-12.5 L2.2,-2 L2.2,6.5 L0,9.5 L-2.2,6.5 L-2.2,-2 Z" fill="white"/>
-        {/* Ala derecha — barrida hacia atrás */}
-        <path d="M2.2,-0.5 L12,4.5 L4,7 L2.2,3.5 Z" fill="white"/>
-        {/* Ala izquierda — simétrica */}
-        <path d="M-2.2,-0.5 L-12,4.5 L-4,7 L-2.2,3.5 Z" fill="white"/>
-        {/* Estabilizador horizontal derecho */}
-        <path d="M2.2,5.5 L7,9.5 L2.2,10 Z" fill="white"/>
-        {/* Estabilizador horizontal izquierdo */}
-        <path d="M-2.2,5.5 L-7,9.5 L-2.2,10 Z" fill="white"/>
-      </g>
-    </svg>
-  )
-}
+import logo from './img/logo.jpg'
 
 // ─── Variants ─────────────────────────────────────────────────────────────────
 const fadeUp = {
@@ -82,237 +59,299 @@ function CustomCursor() {
 
 // ─── Hero Visual — Premium Network Globe ──────────────────────────────────────
 function GlobeHero() {
-  const C = { x: 300, y: 300 }
-  const R = 248
-  const GT = { x: 300, y: 300 }
-
-  // Country positions at orbital radius 178, chosen for dramatic composition
-  const toXY = (deg, r = 178) => ({
-    x: Math.round(C.x + r * Math.cos(deg * Math.PI / 180)),
-    y: Math.round(C.y + r * Math.sin(deg * Math.PI / 180)),
-  })
+  const C = 300
+  const R = 272  // +16% vs 234 anterior
 
   const routes = [
-    {
-      id: 'US', label: 'USA', pos: toXY(222),
-      // Great-circle arc sweeping up through the sky above the sphere
-      get d() { return `M ${this.pos.x},${this.pos.y} C 88,72 402,68 ${GT.x},${GT.y}` },
-      dur: 3.4, delay: 0,
-    },
-    {
-      id: 'CN', label: 'China', pos: toXY(330),
-      get d() { return `M ${this.pos.x},${this.pos.y} C 518,68 372,62 ${GT.x},${GT.y}` },
-      dur: 3.0, delay: 1.1,
-    },
-    {
-      id: 'MX', label: 'México', pos: toXY(201),
-      get d() { return `M ${this.pos.x},${this.pos.y} C 55,208 168,334 ${GT.x},${GT.y}` },
-      dur: 3.8, delay: 0.55,
-    },
+    { id: 'US', label: 'USA',    pos: { x: 153, y: 162 }, d: 'M 153,162 C 38,28 442,20 300,300',   dur: 5.4, delay: 0   },
+    { id: 'CN', label: 'China',  pos: { x: 455, y: 159 }, d: 'M 455,159 C 570,22 392,18 300,300',  dur: 6.0, delay: 1.9 },
+    { id: 'MX', label: 'México', pos: { x: 170, y: 338 }, d: 'M 170,338 C 46,218 106,396 300,300', dur: 4.6, delay: 1.0 },
   ]
 
-  const lats = [-50, -25, 0, 25, 50]
-  const lngs = Array.from({ length: 8 }, (_, i) => i * 22.5)
+  const lats = [-55, -35, -15, 0, 15, 35, 55]
+  const nLng = 10
+
+  const stars = [
+    {x:48,y:88,r:0.7,o:0.22},{x:112,y:42,r:0.9,o:0.16},{x:195,y:65,r:0.5,o:0.28},
+    {x:62,y:190,r:0.8,o:0.18},{x:505,y:70,r:0.6,o:0.25},{x:538,y:148,r:1.0,o:0.14},
+    {x:478,y:232,r:0.7,o:0.20},{x:554,y:322,r:0.5,o:0.28},{x:530,y:422,r:0.8,o:0.17},
+    {x:480,y:494,r:0.6,o:0.22},{x:382,y:542,r:0.9,o:0.18},{x:282,y:560,r:0.6,o:0.14},
+    {x:168,y:534,r:0.8,o:0.20},{x:84,y:490,r:0.6,o:0.25},{x:44,y:392,r:1.0,o:0.16},
+    {x:60,y:298,r:0.5,o:0.22},{x:86,y:138,r:0.7,o:0.18},{x:434,y:46,r:0.6,o:0.26},
+    {x:364,y:30,r:0.9,o:0.15},{x:242,y:26,r:0.7,o:0.20},{x:156,y:22,r:0.5,o:0.18},
+    {x:24,y:252,r:0.6,o:0.16},{x:22,y:352,r:0.8,o:0.22},{x:572,y:238,r:0.7,o:0.15},
+    {x:576,y:392,r:0.5,o:0.20},{x:428,y:567,r:0.8,o:0.14},{x:202,y:577,r:0.5,o:0.18},
+    {x:78,y:550,r:0.7,o:0.17},
+  ]
+
+  // Orbital ambient particles — tiny orange dots pulsing around the sphere rim
+  const particles = Array.from({ length: 16 }, (_, i) => {
+    const angle = (i / 16) * 2 * Math.PI + 0.4
+    const dist = R + 16 + (i % 4) * 10
+    return {
+      x: Math.round(C + dist * Math.cos(angle)),
+      y: Math.round(C + dist * Math.sin(angle)),
+      delay: +(i * 0.36).toFixed(2),
+      dur:   +(2.6 + (i % 5) * 0.55).toFixed(1),
+      r:     +(0.7 + (i % 3) * 0.4).toFixed(1),
+    }
+  })
 
   return (
-    <svg width="100%" height="100%" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid meet" fill="none" style={{ opacity: 0.9, display: 'block' }}>
-        <defs>
+    <svg width="100%" height="100%" viewBox="0 0 600 600"
+      preserveAspectRatio="xMidYMid meet" fill="none"
+      style={{ display: 'block', opacity: 0.93 }}
+    >
+      <defs>
+        <filter id="glb-bloom" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="30" />
+        </filter>
+        <filter id="glb-glow-md" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="9" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glb-glow-sm" x="-120%" y="-120%" width="340%" height="340%">
+          <feGaussianBlur stdDeviation="3.5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glb-glow-xs" x="-200%" y="-200%" width="500%" height="500%">
+          <feGaussianBlur stdDeviation="1.8" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glb-atm" x="-8%" y="-8%" width="116%" height="116%">
+          <feGaussianBlur stdDeviation="14" />
+        </filter>
 
-          {/* ── FILTERS ─────────────────────────────────────────────────── */}
-          {/* Bloom: large diffused glow behind GT */}
-          <filter id="hv-bloom" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="32" />
-          </filter>
-          {/* Glow: medium glow for GT node */}
-          <filter id="hv-glow-md" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="11" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          {/* Glow: tight glow for particles and small nodes */}
-          <filter id="hv-glow-sm" x="-120%" y="-120%" width="340%" height="340%">
-            <feGaussianBlur stdDeviation="4.5" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          {/* Atmosphere: soft blur for edge ring */}
-          <filter id="hv-atm" x="-6%" y="-6%" width="112%" height="112%">
-            <feGaussianBlur stdDeviation="10" />
-          </filter>
+        {/* Sphere — warm light upper-left, cool dark body */}
+        <radialGradient id="glb-sphere" cx="36%" cy="28%" r="72%">
+          <stop offset="0%"   stopColor="#241810" />
+          <stop offset="30%"  stopColor="#160F07" />
+          <stop offset="65%"  stopColor="#0D0905" />
+          <stop offset="100%" stopColor="#060403" />
+        </radialGradient>
 
-          {/* ── SPHERE BODY GRADIENT ────────────────────────────────────── */}
-          {/* Warm light source upper-left, realistic subsurface lighting */}
-          <radialGradient id="hv-sphere" cx="34%" cy="29%" r="72%">
-            <stop offset="0%"   stopColor="#1F160C" stopOpacity="0.95" />
-            <stop offset="40%"  stopColor="#130D07" stopOpacity="0.92" />
-            <stop offset="100%" stopColor="#070402" stopOpacity="0.88" />
-          </radialGradient>
+        {/* Specular highlight — bright warm spot upper-left */}
+        <radialGradient id="glb-spec" cx="28%" cy="22%" r="34%">
+          <stop offset="0%"   stopColor="rgba(255,195,100,0.22)" />
+          <stop offset="55%"  stopColor="rgba(247,148,29,0.07)" />
+          <stop offset="100%" stopColor="rgba(247,148,29,0)" />
+        </radialGradient>
 
-          {/* Edge fade: sphere blends into page background */}
-          <radialGradient id="hv-edge" cx="50%" cy="50%" r="50%">
-            <stop offset="46%"  stopOpacity="0" />
-            <stop offset="80%"  stopColor="rgba(8,5,2,0.55)" stopOpacity="1"/>
-            <stop offset="100%" stopColor="#0D0D0D" stopOpacity="1" />
-          </radialGradient>
+        {/* Shadow — dark lower-right opposite the light */}
+        <radialGradient id="glb-shadow" cx="70%" cy="74%" r="52%">
+          <stop offset="0%"   stopColor="rgba(0,0,0,0.72)" />
+          <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+        </radialGradient>
 
-          {/* GT bloom gradient */}
-          <radialGradient id="hv-gtbloom" cx="50%" cy="50%">
-            <stop offset="0%"  stopColor="#F7941D" stopOpacity="0.45" />
-            <stop offset="30%" stopColor="#F7941D" stopOpacity="0.16" />
-            <stop offset="100%" stopColor="#F7941D" stopOpacity="0" />
-          </radialGradient>
+        {/* Edge vignette — sphere melts into background */}
+        <radialGradient id="glb-edge" cx="50%" cy="50%" r="50%">
+          <stop offset="42%" stopColor="transparent" />
+          <stop offset="80%" stopColor="rgba(6,4,2,0.5)" />
+          <stop offset="100%" stopColor="#0D0D0D" />
+        </radialGradient>
 
-          {/* ── DOT-MATRIX TEXTURE ──────────────────────────────────────── */}
-          <pattern id="hv-dots" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
-            <circle cx="8" cy="8" r="0.85" fill="rgba(255,255,255,0.05)" />
-          </pattern>
+        {/* GT inner bloom */}
+        <radialGradient id="glb-gtbloom" cx="50%" cy="50%">
+          <stop offset="0%"  stopColor="rgba(247,148,29,0.52)" />
+          <stop offset="35%" stopColor="rgba(247,148,29,0.16)" />
+          <stop offset="100%" stopColor="rgba(247,148,29,0)" />
+        </radialGradient>
 
-          {/* ── ROUTE GRADIENTS (country→GT: dim origin, bright destination) */}
-          {routes.map(r => (
-            <linearGradient key={r.id} id={`hv-rg-${r.id}`}
-              x1={r.pos.x} y1={r.pos.y} x2={GT.x} y2={GT.y}
-              gradientUnits="userSpaceOnUse">
-              <stop offset="0%"   stopColor="#F7941D" stopOpacity="0.06"/>
-              <stop offset="45%"  stopColor="#F7941D" stopOpacity="0.25"/>
-              <stop offset="100%" stopColor="#F7941D" stopOpacity="0.6"/>
-            </linearGradient>
-          ))}
+        {/* Atmosphere rim gradient */}
+        <radialGradient id="glb-atm-grad" cx="50%" cy="50%" r="50%">
+          <stop offset="88%"  stopColor="rgba(247,148,29,0)" />
+          <stop offset="100%" stopColor="rgba(247,148,29,0.13)" />
+        </radialGradient>
 
-          {/* ── CLIP ────────────────────────────────────────────────────── */}
-          <clipPath id="hv-clip">
-            <circle cx={C.x} cy={C.y} r={R} />
-          </clipPath>
-
-        </defs>
-
-        {/* ══ L0 SPHERE BODY ═══════════════════════════════════════════════ */}
-        <circle cx={C.x} cy={C.y} r={R} fill="url(#hv-sphere)" />
-
-        {/* ══ L1 DOT MATRIX (static tech texture inside sphere) ════════════ */}
-        <g clipPath="url(#hv-clip)">
-          <rect x="0" y="0" width="600" height="600" fill="url(#hv-dots)" />
-        </g>
-
-        {/* ══ L2 LAT/LNG ARCS (slow rotation, subtle) ══════════════════════ */}
-        <g clipPath="url(#hv-clip)">
-          <animateTransform attributeName="transform" type="rotate"
-            from="0 300 300" to="360 300 300" dur="80s" repeatCount="indefinite" />
-          {lats.map((lat, i) => {
-            const cy2 = C.y - R * Math.sin(lat * Math.PI / 180)
-            const rx  = R * Math.cos(lat * Math.PI / 180)
-            return <ellipse key={i} cx={C.x} cy={cy2} rx={rx} ry={rx * 0.1}
-              stroke="rgba(255,255,255,0.065)" strokeWidth="0.5" fill="none" />
-          })}
-          {lngs.map((a, i) => (
-            <ellipse key={i} cx={C.x} cy={C.y} rx={R * 0.052} ry={R}
-              stroke="rgba(255,255,255,0.065)" strokeWidth="0.5" fill="none"
-              transform={`rotate(${a},${C.x},${C.y})`} />
-          ))}
-        </g>
-
-        {/* ══ L3 ATMOSPHERE RING ═══════════════════════════════════════════ */}
-        <circle cx={C.x} cy={C.y} r={R}
-          fill="none" stroke="rgba(247,148,29,0.08)" strokeWidth="26" filter="url(#hv-atm)" />
-
-        {/* ══ L4 EDGE FADE ═════════════════════════════════════════════════ */}
-        <circle cx={C.x} cy={C.y} r={R} fill="url(#hv-edge)" />
-
-        {/* ══ L5 GT DEEP BLOOM ═════════════════════════════════════════════ */}
-        <circle cx={GT.x} cy={GT.y} r="145" fill="url(#hv-gtbloom)" filter="url(#hv-bloom)" />
-
-        {/* ══ L6 ROUTE LINES ═══════════════════════════════════════════════ */}
+        {/* Route line gradients: dim at origin, bright orange at GT */}
         {routes.map(r => (
-          <g key={`rt-${r.id}`}>
-            {/* Ghost: barely-there base so route exists even without particles */}
-            <path d={r.d} stroke="rgba(255,255,255,0.035)" strokeWidth="0.8" />
-            {/* Gradient: directional orange going country → GT */}
-            <path d={r.d} stroke={`url(#hv-rg-${r.id})`} strokeWidth="1.1" />
-            {/* Soft glow on top for depth */}
-            <path d={r.d} stroke="rgba(247,148,29,0.08)" strokeWidth="4" filter="url(#hv-glow-sm)" />
-          </g>
+          <linearGradient key={r.id} id={`glb-rg-${r.id}`}
+            x1={r.pos.x} y1={r.pos.y} x2={300} y2={300}
+            gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stopColor="#F7941D" stopOpacity="0.04"/>
+            <stop offset="40%"  stopColor="#F7941D" stopOpacity="0.28"/>
+            <stop offset="100%" stopColor="#F7941D" stopOpacity="0.72"/>
+          </linearGradient>
         ))}
 
-        {/* ══ L7 COMET PARTICLES ═══════════════════════════════════════════ */}
-        {/* Two waves per route, each wave has a 3-dot comet trail.
-            Trail dots begin AFTER main dot so they appear BEHIND it on the path. */}
-        {routes.flatMap(r =>
-          [0, 1].map(wave => {
-            const t0 = r.delay + wave * (r.dur / 2)
-            return (
-              <g key={`comet-${r.id}-${wave}`}>
-                {/* Tail 2 — faintest, smallest */}
-                <circle r="1.1" fill="#F7941D" opacity="0.18" filter="url(#hv-glow-sm)">
-                  <animateMotion path={r.d} dur={`${r.dur}s`}
-                    repeatCount="indefinite" begin={`${t0 + 0.3}s`} />
-                </circle>
-                {/* Tail 1 — medium */}
-                <circle r="2.2" fill="#F7941D" opacity="0.45" filter="url(#hv-glow-sm)">
-                  <animateMotion path={r.d} dur={`${r.dur}s`}
-                    repeatCount="indefinite" begin={`${t0 + 0.15}s`} />
-                </circle>
-                {/* Head — brightest */}
-                <circle r="3.5" fill="#F7941D" filter="url(#hv-glow-sm)">
-                  <animateMotion path={r.d} dur={`${r.dur}s`}
-                    repeatCount="indefinite" begin={`${t0}s`} />
-                </circle>
-              </g>
-            )
-          })
-        )}
+        {/* Micro dot texture */}
+        <pattern id="glb-dots" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse">
+          <circle cx="9" cy="9" r="0.65" fill="rgba(255,255,255,0.038)" />
+        </pattern>
 
-        {/* ══ L8 COUNTRY NODES ═════════════════════════════════════════════ */}
-        {routes.map((r, i) => (
-          <g key={`node-${r.id}`}>
+        <clipPath id="glb-clip">
+          <circle cx={C} cy={C} r={R} />
+        </clipPath>
+      </defs>
+
+      {/* ── STARS ──────────────────────────────────────────── */}
+      {stars.map((s, i) => (
+        <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="white" opacity={s.o} />
+      ))}
+
+      {/* ── ATMOSPHERE outer glow halo ─────────────────────── */}
+      <circle cx={C} cy={C} r={R + 4}
+        fill="none" stroke="rgba(247,148,29,0.09)" strokeWidth="30"
+        filter="url(#glb-atm)" />
+
+      {/* ── SPHERE BODY ────────────────────────────────────── */}
+      <circle cx={C} cy={C} r={R} fill="url(#glb-sphere)" />
+
+      {/* ── DOT MATRIX texture ─────────────────────────────── */}
+      <g clipPath="url(#glb-clip)">
+        <rect x="0" y="0" width="600" height="600" fill="url(#glb-dots)" />
+      </g>
+
+      {/* ── LAT/LNG GRID (slow rotation) ───────────────────── */}
+      <g clipPath="url(#glb-clip)">
+        <g>
+          <animateTransform attributeName="transform" type="rotate"
+            from="0 300 300" to="360 300 300" dur="90s" repeatCount="indefinite" />
+          {lats.map((lat, i) => {
+            const cy2 = C - R * Math.sin(lat * Math.PI / 180)
+            const rx  = R * Math.cos(lat * Math.PI / 180)
+            return (
+              <ellipse key={i} cx={C} cy={cy2} rx={rx} ry={rx * 0.088}
+                stroke={lat === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}
+                strokeWidth={lat === 0 ? 0.7 : 0.4} fill="none" />
+            )
+          })}
+          {Array.from({ length: nLng }, (_, i) => (
+            <ellipse key={i} cx={C} cy={C} rx={R * 0.042} ry={R}
+              stroke="rgba(255,255,255,0.05)" strokeWidth="0.4" fill="none"
+              transform={`rotate(${i * (180 / nLng)},${C},${C})`} />
+          ))}
+        </g>
+      </g>
+
+      {/* ── SPECULAR HIGHLIGHT ─────────────────────────────── */}
+      <circle cx={C} cy={C} r={R} fill="url(#glb-spec)" clipPath="url(#glb-clip)" />
+
+      {/* ── SHADOW ─────────────────────────────────────────── */}
+      <circle cx={C} cy={C} r={R} fill="url(#glb-shadow)" clipPath="url(#glb-clip)" />
+
+      {/* ── EDGE VIGNETTE ──────────────────────────────────── */}
+      <circle cx={C} cy={C} r={R} fill="url(#glb-edge)" />
+
+      {/* ── ATMOSPHERE rim ─────────────────────────────────── */}
+      <circle cx={C} cy={C} r={R} fill="url(#glb-atm-grad)" />
+      <circle cx={C} cy={C} r={R}
+        fill="none" stroke="rgba(247,148,29,0.12)" strokeWidth="1.5" />
+
+      {/* ── GT DEEP BLOOM ──────────────────────────────────── */}
+      <circle cx={C} cy={C} r="155" fill="url(#glb-gtbloom)" filter="url(#glb-bloom)" />
+
+      {/* ── ROUTE BASE TRACKS ──────────────────────────────── */}
+      {routes.map(r => (
+        <path key={`rb-${r.id}`} d={r.d}
+          stroke="rgba(255,255,255,0.03)" strokeWidth="0.7" />
+      ))}
+
+      {/* ── ROUTE GLOWING LINES ────────────────────────────── */}
+      {routes.map(r => (
+        <g key={`rl-${r.id}`}>
+          <path d={r.d} stroke="rgba(247,148,29,0.07)" strokeWidth="8"
+            filter="url(#glb-glow-sm)" />
+          <path d={r.d} stroke={`url(#glb-rg-${r.id})`} strokeWidth="1.3" />
+        </g>
+      ))}
+
+      {/* ── PACKAGE PARTICLES ──────────────────────────────── */}
+      {routes.flatMap(r =>
+        [0, 1].map(wave => {
+          const t0 = r.delay + wave * (r.dur * 0.5)
+          return (
+            <g key={`pkg-${r.id}-${wave}`}>
+              {/* Glow halo */}
+              <circle r="9" fill="rgba(247,148,29,0.22)" filter="url(#glb-glow-sm)">
+                <animateMotion path={r.d} dur={`${r.dur}s`}
+                  repeatCount="indefinite" begin={`${t0}s`} rotate="auto" />
+              </circle>
+              {/* Package box — auto-rotates to face direction of travel */}
+              <g>
+                <animateMotion path={r.d} dur={`${r.dur}s`}
+                  repeatCount="indefinite" begin={`${t0}s`} rotate="auto" />
+                <rect x="-5.5" y="-4" width="11" height="8" rx="1.5"
+                  fill="#F7941D" stroke="rgba(255,220,150,0.4)" strokeWidth="0.6" />
+                <line x1="-5.5" y1="0" x2="5.5" y2="0"
+                  stroke="rgba(255,255,255,0.4)" strokeWidth="0.9" />
+                <line x1="0" y1="-4" x2="0" y2="4"
+                  stroke="rgba(255,255,255,0.4)" strokeWidth="0.9" />
+              </g>
+              {/* Trail dot 1 */}
+              <circle r="2.2" fill="#F7941D" opacity="0.5">
+                <animateMotion path={r.d} dur={`${r.dur}s`}
+                  repeatCount="indefinite" begin={`${t0 + 0.18}s`} />
+              </circle>
+              {/* Trail dot 2 */}
+              <circle r="1.3" fill="#F7941D" opacity="0.24">
+                <animateMotion path={r.d} dur={`${r.dur}s`}
+                  repeatCount="indefinite" begin={`${t0 + 0.32}s`} />
+              </circle>
+            </g>
+          )
+        })
+      )}
+
+      {/* ── COUNTRY ORIGIN NODES ───────────────────────────── */}
+      {routes.map((r, i) => {
+        const lw = Math.max(32, r.label.length * 6 + 12)
+        return (
+          <g key={`nd-${r.id}`}>
             {/* Expanding pulse ring */}
             <circle cx={r.pos.x} cy={r.pos.y} r="14"
-              fill="none" stroke="rgba(247,148,29,0.14)" strokeWidth="1">
-              <animate attributeName="r" values="12;28;12"
-                dur={`${2.6 + i * 0.38}s`} repeatCount="indefinite" begin={`${i * 0.44}s`} />
+              fill="none" stroke="rgba(247,148,29,0.18)" strokeWidth="1">
+              <animate attributeName="r" values="12;30;12"
+                dur={`${2.8 + i * 0.35}s`} repeatCount="indefinite" begin={`${i * 0.5}s`} />
               <animate attributeName="opacity" values="0.4;0;0.4"
-                dur={`${2.6 + i * 0.38}s`} repeatCount="indefinite" begin={`${i * 0.44}s`} />
+                dur={`${2.8 + i * 0.35}s`} repeatCount="indefinite" begin={`${i * 0.5}s`} />
             </circle>
-            {/* Node body */}
-            <circle cx={r.pos.x} cy={r.pos.y} r="11"
-              fill="#0E0E0E" stroke="rgba(247,148,29,0.4)" strokeWidth="1" />
-            {/* Inner ambient fill */}
-            <circle cx={r.pos.x} cy={r.pos.y} r="5"
-              fill="rgba(247,148,29,0.18)" filter="url(#hv-glow-sm)" />
+            {/* Node outer ring */}
+            <circle cx={r.pos.x} cy={r.pos.y} r="13"
+              fill="#101010" stroke="rgba(247,148,29,0.38)" strokeWidth="1.2" />
+            {/* Node inner glow */}
+            <circle cx={r.pos.x} cy={r.pos.y} r="6"
+              fill="rgba(247,148,29,0.2)" filter="url(#glb-glow-xs)" />
             {/* Core dot */}
-            <circle cx={r.pos.x} cy={r.pos.y} r="2.2" fill="#F7941D" />
-            {/* Country code label */}
-            <text x={r.pos.x} y={r.pos.y - 17} textAnchor="middle"
-              fontSize="8.5" fontWeight="600" letterSpacing="0.1em"
-              fill="rgba(247,148,29,0.68)"
-              fontFamily="Space Grotesk,sans-serif">{r.id}</text>
+            <circle cx={r.pos.x} cy={r.pos.y} r="2.5" fill="#F7941D" />
+            {/* Label pill backdrop */}
+            <rect x={r.pos.x - lw / 2} y={r.pos.y - 34} width={lw} height="14" rx="3.5"
+              fill="rgba(8,6,4,0.78)" stroke="rgba(247,148,29,0.22)" strokeWidth="0.6" />
+            {/* Label text */}
+            <text x={r.pos.x} y={r.pos.y - 24}
+              textAnchor="middle" fontSize="8.5" fontWeight="700" letterSpacing="0.1em"
+              fill="rgba(247,148,29,0.88)"
+              fontFamily="Space Grotesk,system-ui,sans-serif">{r.label}</text>
           </g>
-        ))}
+        )
+      })}
 
-        {/* ══ L9 GT CENTER NODE ════════════════════════════════════════════ */}
-        {/* Outermost slow pulse — sets the cadence */}
-        <circle cx={GT.x} cy={GT.y} r="46" fill="none"
-          stroke="rgba(247,148,29,0.09)" strokeWidth="1">
-          <animate attributeName="r" values="44;74;44" dur="4.8s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.5;0;0.5" dur="4.8s" repeatCount="indefinite" />
-        </circle>
-        {/* Inner faster pulse */}
-        <circle cx={GT.x} cy={GT.y} r="34" fill="none"
-          stroke="rgba(247,148,29,0.18)" strokeWidth="1">
-          <animate attributeName="r" values="32;54;32" dur="3.5s" repeatCount="indefinite" begin="0.65s" />
-          <animate attributeName="opacity" values="0.6;0;0.6" dur="3.5s" repeatCount="indefinite" begin="0.65s" />
-        </circle>
-        {/* GT node ring — orange border with glow */}
-        <circle cx={GT.x} cy={GT.y} r="24"
-          fill="#141414" stroke="#F7941D" strokeWidth="1.5" filter="url(#hv-glow-md)" />
-        {/* Warm inner fill */}
-        <circle cx={GT.x} cy={GT.y} r="15" fill="rgba(247,148,29,0.09)" />
-        {/* "GT" label */}
-        <text x={GT.x} y={GT.y - 2} textAnchor="middle"
-          fontSize="10" fontWeight="800" fill="#FFFFFF" letterSpacing="1.5"
-          fontFamily="Space Grotesk,sans-serif">GT</text>
-        {/* "GUATEMALA" sub-label */}
-        <text x={GT.x} y={GT.y + 11} textAnchor="middle"
-          fontSize="5.5" fontWeight="500" fill="rgba(247,148,29,0.6)"
-          fontFamily="Space Grotesk,sans-serif" letterSpacing="0.8">GUATEMALA</text>
+      {/* ── GT DESTINATION HUB ─────────────────────────────── */}
+      {/* Slow outer pulse */}
+      <circle cx={C} cy={C} r="50" fill="none" stroke="rgba(247,148,29,0.08)" strokeWidth="1">
+        <animate attributeName="r" values="48;82;48" dur="5.2s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.5;0;0.5" dur="5.2s" repeatCount="indefinite" />
+      </circle>
+      {/* Fast inner pulse */}
+      <circle cx={C} cy={C} r="36" fill="none" stroke="rgba(247,148,29,0.16)" strokeWidth="1">
+        <animate attributeName="r" values="34;56;34" dur="3.7s" repeatCount="indefinite" begin="0.7s" />
+        <animate attributeName="opacity" values="0.6;0;0.6" dur="3.7s" repeatCount="indefinite" begin="0.7s" />
+      </circle>
+      {/* Hub ring with glow */}
+      <circle cx={C} cy={C} r="26"
+        fill="#131313" stroke="#F7941D" strokeWidth="1.6" filter="url(#glb-glow-md)" />
+      {/* Warm inner fill */}
+      <circle cx={C} cy={C} r="16" fill="rgba(247,148,29,0.1)" />
+      {/* GT label */}
+      <text x={C} y={C - 2} textAnchor="middle"
+        fontSize="11" fontWeight="800" fill="#FFFFFF" letterSpacing="2"
+        fontFamily="Space Grotesk,system-ui,sans-serif">GT</text>
+      {/* GUATEMALA sub-label */}
+      <text x={C} y={C + 12} textAnchor="middle"
+        fontSize="5.5" fontWeight="600" fill="rgba(247,148,29,0.65)"
+        fontFamily="Space Grotesk,system-ui,sans-serif" letterSpacing="1.2">GUATEMALA</text>
 
-      </svg>
+    </svg>
   )
 }
 
@@ -577,7 +616,7 @@ function Navbar() {
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="#" className="flex items-center gap-3">
-          <LogoMark size={36} />
+          <img src={logo} alt="Inter Express GT" style={{ height: 40, width: 'auto', display: 'block' }} className="h-10 sm:h-10 xs:h-8" />
           <span style={{ fontWeight: 700, color: '#FFFFFF', fontSize: 13, letterSpacing: '0.06em' }}>INTER EXPRESS GT</span>
         </a>
 
@@ -1354,62 +1393,201 @@ function CTAFinal() {
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 function Footer() {
-  const links = ['Servicios', 'Cómo funciona', 'FAQ', 'Contacto']
+  const navLinks = [
+    { label: 'Inicio', href: '#hero' },
+    { label: 'Servicios', href: '#servicios' },
+    { label: 'Cómo funciona', href: '#como-funciona' },
+    { label: 'FAQ', href: '#faq' },
+  ]
+
+  const contactItems = [
+    {
+      icon: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+        </svg>
+      ),
+      text: 'Jalapa, Guatemala',
+    },
+    {
+      icon: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+        </svg>
+      ),
+      text: 'info@interexpressgt.com',
+      href: 'mailto:info@interexpressgt.com',
+    },
+    {
+      icon: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      ),
+      text: '+502 XXXX-XXXX',
+      href: 'https://wa.me/50200000000',
+    },
+    {
+      icon: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      ),
+      text: 'Lun–Vie 8AM–6PM · Sáb 8AM–1PM',
+    },
+  ]
+
+  const socialLinks = [
+    {
+      label: 'Instagram',
+      href: 'https://instagram.com/interexpress.gt',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+        </svg>
+      ),
+    },
+    {
+      label: 'Facebook',
+      href: 'https://facebook.com/interexpressgt',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+        </svg>
+      ),
+    },
+    {
+      label: 'WhatsApp',
+      href: 'https://wa.me/50200000000',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      ),
+    },
+    {
+      label: 'TikTok',
+      href: 'https://tiktok.com/@interexpressgt',
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
+        </svg>
+      ),
+    },
+  ]
+
+  const paymentMethods = ['Visa', 'Mastercard', 'Transferencia', 'Efectivo']
+
+  const colTitle = (text) => (
+    <p style={{ color: '#F7941D', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 24 }}>{text}</p>
+  )
+
   return (
-    <footer style={{ background: '#0D0D0D', borderTop: '1px solid #111111' }}>
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-3 gap-12 mb-12">
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-              <LogoMark size={30} />
+    <footer style={{ background: '#0A0A0A', borderTop: '1px solid #2A2A2A', position: 'relative', overflow: 'hidden' }}>
+      {/* Ambient glow bottom-left */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, width: 500, height: 400, background: 'radial-gradient(circle at bottom left, rgba(247,148,29,0.04) 0%, transparent 65%)', pointerEvents: 'none' }} />
+
+      <div className="max-w-6xl mx-auto px-6 py-16 relative">
+
+        {/* 4-column grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 md:gap-8 mb-14">
+
+          {/* Col 1 — Brand */}
+          <div className="sm:col-span-2 md:col-span-1">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+              <img src={logo} alt="Inter Express GT" style={{ height: 36, width: 'auto', display: 'block' }} />
               <span style={{ fontWeight: 700, color: '#FFFFFF', fontSize: 13, letterSpacing: '0.06em' }}>INTER EXPRESS GT</span>
             </div>
-            <p style={{ color: '#444444', fontSize: 14, lineHeight: 1.7, marginBottom: 12 }}>Compra en cualquier tienda del mundo. Nosotros lo traemos a Guatemala.</p>
-            <p style={{ color: '#2A2A2A', fontSize: 13 }}>Jalapa, Guatemala</p>
+            <p style={{ color: '#F7941D', fontSize: 13, fontWeight: 500, marginBottom: 12 }}>Compra global. Recibe en Guatemala.</p>
+            <p style={{ color: '#555555', fontSize: 13.5, lineHeight: 1.75 }}>
+              Tu puente de compras internacionales. Comprá en cualquier tienda del mundo y recibilo en Guatemala.
+            </p>
           </div>
+
+          {/* Col 2 — Navegación */}
           <div>
-            <p style={{ color: '#2A2A2A', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 20 }}>NAVEGACIÓN</p>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {links.map(l => (
-                <li key={l}>
-                  <a href={`#${l.toLowerCase().replace(' ', '-')}`} style={{ color: '#444444', fontSize: 14, transition: 'color 0.2s' }}
-                    onMouseEnter={e => (e.target.style.color = '#FFFFFF')} onMouseLeave={e => (e.target.style.color = '#444444')}>{l}</a>
+            {colTitle('Navegación')}
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
+              {navLinks.map(({ label, href }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    style={{ color: '#AAAAAA', fontSize: 14, transition: 'color 0.2s' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#FFFFFF')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#AAAAAA')}
+                  >{label}</a>
                 </li>
               ))}
             </ul>
           </div>
+
+          {/* Col 3 — Contacto */}
           <div>
-            <p style={{ color: '#2A2A2A', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 20 }}>CONTACTO</p>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <li>
-                <a href="https://instagram.com/interexpress.gt" target="_blank" rel="noopener noreferrer"
-                  style={{ color: '#444444', fontSize: 14, display: 'flex', alignItems: 'center', gap: 10, transition: 'color 0.2s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#FFFFFF')} onMouseLeave={e => (e.currentTarget.style.color = '#444444')}
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="2" width="20" height="20" rx="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                  </svg>
-                  @interexpress.gt
-                </a>
-              </li>
-              <li>
-                <a href="https://wa.me/50200000000" target="_blank" rel="noopener noreferrer"
-                  style={{ color: '#444444', fontSize: 14, display: 'flex', alignItems: 'center', gap: 10, transition: 'color 0.2s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#FFFFFF')} onMouseLeave={e => (e.currentTarget.style.color = '#444444')}
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                  </svg>
-                  WhatsApp
-                </a>
-              </li>
+            {colTitle('Contacto')}
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {contactItems.map(({ icon, text, href }, i) => (
+                <li key={i}>
+                  {href ? (
+                    <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer"
+                      style={{ color: '#AAAAAA', fontSize: 13.5, display: 'flex', alignItems: 'flex-start', gap: 10, lineHeight: 1.5, transition: 'color 0.2s' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = '#FFFFFF')}
+                      onMouseLeave={e => (e.currentTarget.style.color = '#AAAAAA')}
+                    >
+                      <span style={{ color: '#F7941D', marginTop: 1, flexShrink: 0 }}>{icon}</span>
+                      {text}
+                    </a>
+                  ) : (
+                    <span style={{ color: '#AAAAAA', fontSize: 13.5, display: 'flex', alignItems: 'flex-start', gap: 10, lineHeight: 1.5 }}>
+                      <span style={{ color: '#F7941D', marginTop: 1, flexShrink: 0 }}>{icon}</span>
+                      {text}
+                    </span>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
+
+          {/* Col 4 — Redes + Pagos */}
+          <div>
+            {colTitle('Seguinos')}
+            <div style={{ display: 'flex', gap: 10, marginBottom: 28, flexWrap: 'wrap' }}>
+              {socialLinks.map(({ label, href, icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  style={{ width: 38, height: 38, borderRadius: '50%', border: '1px solid #2A2A2A', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888888', transition: 'border-color 0.2s, color 0.2s, background 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#F7941D'; e.currentTarget.style.color = '#F7941D'; e.currentTarget.style.background = 'rgba(247,148,29,0.06)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#2A2A2A'; e.currentTarget.style.color = '#888888'; e.currentTarget.style.background = 'transparent' }}
+                >
+                  {icon}
+                </a>
+              ))}
+            </div>
+
+            {colTitle('Métodos de pago')}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {paymentMethods.map(m => (
+                <span
+                  key={m}
+                  style={{ background: '#141414', border: '1px solid #2A2A2A', borderRadius: 6, padding: '5px 11px', color: '#888888', fontSize: 11.5, fontWeight: 500, letterSpacing: '0.02em' }}
+                >
+                  {m}
+                </span>
+              ))}
+            </div>
+          </div>
+
+        </div>{/* /grid */}
+
+        {/* Bottom bar */}
+        <div style={{ borderTop: '1px solid #1A1A1A', paddingTop: 24, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+          <p style={{ color: '#555555', fontSize: 13 }}>© 2025 Inter Express GT. Todos los derechos reservados.</p>
+          <p style={{ color: '#555555', fontSize: 13 }}>Diseñado con ♥ en Guatemala</p>
         </div>
-        <div style={{ borderTop: '1px solid #111111', paddingTop: 28, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 }}>
-          <p style={{ color: '#2A2A2A', fontSize: 13 }}>© 2025 Inter Express GT — Compra global. Recibe en Guatemala.</p>
-          <p style={{ color: '#222222', fontSize: 12 }}>Jalapa, Guatemala · Servicio confiable desde 2020</p>
-        </div>
+
       </div>
     </footer>
   )
