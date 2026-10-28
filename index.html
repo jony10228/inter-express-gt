@@ -1,4 +1,4 @@
-
+```html
 <!doctype html>
 <html lang="es">
   <head>
@@ -14,12 +14,22 @@
     />
 
     <meta name="robots" content="index, follow" />
-
     <meta name="theme-color" content="#ffffff" />
 
     <title>Inter Express GT | Paquetería Internacional a Guatemala</title>
 
-    <!-- Open Graph para compartir tu página en redes sociales -->
+    <!-- Nombre del sitio para Google -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Inter Express",
+        "alternateName": "Inter Express GT",
+        "url": "https://interex.app/"
+      }
+    </script>
+
+    <!-- Open Graph para compartir en redes sociales -->
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_GT" />
     <meta
@@ -33,7 +43,7 @@
     <meta property="og:url" content="https://interex.app/" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
 
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
@@ -47,3 +57,4 @@
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+```
